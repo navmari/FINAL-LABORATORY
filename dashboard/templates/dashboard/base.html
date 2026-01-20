@@ -1,0 +1,141 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href = "{% static 'css/pet.css' %}">
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+</head>
+<body>
+
+    <div class="dashboard-wrapper">
+        <!-- Sidebar -->
+        <aside class="dashboard-sidebar">
+            <div class="sidebar-brand">
+                <h3>PetConnect</h3>
+            </div>
+
+            <nav class="sidebar-nav">
+                {% if user.is_authenticated and user.profile.shelter %}
+                    <div class="sidebar-section">
+                        <h4>Main</h4>
+                        <a href="{% url 'dashboard' %}" class="sidebar-link">
+                            📊 Dashboard
+                        </a>
+                        <a href="{% url 'dashboard-pets' %}" class="sidebar-link">
+                            🐾 My Pets
+                        </a>
+                        <a href="{% url 'dashboard-adoptions' %}" class="sidebar-link">
+                            📋 Applications
+                        </a>
+                    </div>
+
+                    <div class="sidebar-section">
+                        <h4>Manage</h4>
+                        <a href="{% url 'pet-add' %}" class="sidebar-link">
+                            ➕ Add Pet
+                        </a>
+                    </div>
+                {% endif %}
+
+                <div class="sidebar-section">
+                    <h4>Account</h4>
+                    <a href="/" class="sidebar-link">
+                        🏠 Home
+                    </a>
+                    <form method="post" action="{% url 'logout' %}" id="logout-form" style="display: inline;">
+                        {% csrf_token %}
+                        <button type="submit" class="sidebar-link logout-btn">
+                            🚪 Logout
+                        </button>
+                    </form>
+                </div>
+            </nav>
+        </aside>
+
+        <!-- Main Content -->
+        <div class="dashboard-content">
+            <div class="page-container">
+
+            {% if messages %}
+            <div class="messages">
+                {% for message in messages %}
+                    <div class="message {{ message.tags }}">{{ message }}</div>
+                {% endfor %}
+            </div>
+            {% endif %}
+
+            {% block content %}
+           <!-- pages-->
+            {% endblock content %}
+
+            <footer class="footer">
+                <div class="footer-container">
+
+                    <div class="footer-section">
+                        <img src="{% static 'images/shelter_logos/pCLOGO.png' %}" alt="PetConnect Logo" class="footer-logo">
+                        <h3>PetConnect</h3>
+                        <p>
+                            An Online Pet Care and Adoption System that promotes responsible pet adoption,
+                            animal welfare awareness, and proper pet care.
+                        </p>
+                    </div>
+
+                    <!-- ✅ Added / Updated Section -->
+                    <div class="footer-section">
+                        <h4>Pet Listing & Management</h4>
+                        <p>
+                            PetConnect is open to individuals and registered animal shelters who wish to
+                            list pets for adoption on the platform <strong>free of charge</strong>.
+                        </p>
+                        <p>
+                            Authorized users are given access to add, update, and manage their pet records
+                            directly within the system.
+                        </p>
+                        <p>
+                            To request access, interested individuals or shelters may contact the system
+                            administrator using the details provided.
+                        </p>
+                    </div>
+
+                    <div class="footer-section">
+                        <h4>University</h4>
+                        <p>
+                            Cavite State University<br>
+                            Bacoor City Campus<br>
+                            Soldiers Hills IV, Molino VI<br>
+                            City of Bacoor, Cavite
+                        </p>
+                        <p>📞 (046) 476-5029</p>
+                        <a href="https://www.cvsu.edu.ph" target="_blank">www.cvsu.edu.ph</a>
+                    </div>
+
+                    <div class="footer-section">
+                        <h4>Developer / Admin</h4>
+                        <p>
+                            Maricar E. Navales<br>
+                            Web Developer & System Administrator
+                        </p>
+                        <p>📧 mariengeresnavales@gmail.com</p>
+                        <p>📱 0966 395 1811</p>
+                    </div>
+
+                </div>
+
+                <div class="footer-bottom">
+                    <p>© 2026 PetConnect | Cavite State University – Bacoor Campus</p>
+                </div>
+            </footer>
+
+            </div>
+        </div>
+    </div>
+
+        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+        <script src="{% static 'js/pet.js' %}"></script>
+        <script src="{% static 'js/dashboard.js' %}"></script>
+
+</body>
+</html>

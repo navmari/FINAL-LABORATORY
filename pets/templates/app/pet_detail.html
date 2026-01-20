@@ -1,0 +1,155 @@
+{% extends 'app/base.html' %}
+
+{% block title %}{{ pet.pet_name }} — Pet Details{% endblock %}
+
+{% block content %}
+<div class="pet-detail-container">
+    <div class="pet-detail-wrapper">
+        <!-- Left Side - Pet Image -->
+        <div class="pet-detail-image">
+            {% if pet.pet_image %}
+                <img src="{{ pet.pet_image.url }}" alt="{{ pet.pet_name }}" class="pet-detail-pic">
+            {% else %}
+                <div class="pet-detail-placeholder">
+                    <span>🐾</span>
+                </div>
+            {% endif %}
+        </div>
+
+        <!-- Right Side - Pet Details -->
+        <div class="pet-detail-info">
+            <h1>{{ pet.pet_name }}</h1>
+
+            <div class="pet-detail-fields">
+                <!-- Species -->
+                <div class="detail-row">
+                    <span class="detail-label">Species:</span>
+                    <span class="detail-value">{{ pet.get_species_display }}</span>
+                </div>
+
+                <!-- Breed -->
+                <div class="detail-row">
+                    <span class="detail-label">Breed:</span>
+                    <span class="detail-value">{{ pet.breed }}</span>
+                </div>
+
+                <!-- Gender -->
+                <div class="detail-row">
+                    <span class="detail-label">Gender:</span>
+                    <span class="detail-value">{{ pet.get_gender_display }}</span>
+                </div>
+
+                <!-- Age -->
+                <div class="detail-row">
+                    <span class="detail-label">Age:</span>
+                    <span class="detail-value">
+                        {% if pet.age_years == 0 and pet.age_months > 0 %}
+                            {{ pet.age_months }} month{% if pet.age_months != 1 %}s{% endif %}
+                        {% elif pet.age_months == 0 and pet.age_years > 0 %}
+                            {{ pet.age_years }} year{% if pet.age_years != 1 %}s{% endif %}
+                        {% elif pet.age_years > 0 and pet.age_months > 0 %}
+                            {{ pet.age_years }} year{% if pet.age_years != 1 %}s{% endif %} {{ pet.age_months }} month{% if pet.age_months != 1 %}s{% endif %}
+                        {% else %}
+                            Not specified
+                        {% endif %}
+                    </span>
+                </div>
+
+                <!-- Health Status -->
+                <div class="detail-row">
+                    <span class="detail-label">Health Status:</span>
+                    <span class="detail-value">{{ pet.health_status }}</span>
+                </div>
+            </div>
+
+            <!-- Description -->
+            <div class="pet-detail-description">
+                <h3>Description</h3>
+                <p>{{ pet.description }}</p>
+            </div>
+
+            <!-- Adoption Fee -->
+            <div class="adoption-fee">
+                <strong>Adoption Fee:</strong> ₱{{ pet.adoption_fee }}
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="pet-detail-actions">
+                {% if user.is_authenticated and user.profile.role == 'ADOPTER' %}
+                    <a href="{% url 'adopt-pet' pet.id %}" class="btn-adopt-large">Apply to Adopt</a>
+                {% elif not user.is_authenticated %}
+                    <a href="{% url 'signup' %}?next={% url 'adopt-pet' pet.id %}" class="btn-adopt-large">Sign up to Adopt</a>
+                {% else %}
+                    <span class="badge-staff">Shelter Staff</span>
+                {% endif %}
+                <a href="{% url 'home' %}" class="btn-back">← Back to Pets</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Shelter Information Section -->
+    <div class="shelter-info-section">
+        <h2>About the Shelter</h2>
+        <div class="shelter-info-wrapper">
+            <!-- Shelter Logo -->
+            <div class="shelter-logo-container">
+                {% if pet.shelter.logo_thumb %}
+                    <img src="{{ pet.shelter.logo_thumb.url }}" alt="{{ pet.shelter.shelter_name }}" class="shelter-logo">
+                {% elif pet.shelter.logo %}
+                    <img src="{{ pet.shelter.logo.url }}" alt="{{ pet.shelter.shelter_name }}" class="shelter-logo">
+                {% else %}
+                    <div class="shelter-logo-placeholder">🏛️</div>
+                {% endif %}
+            </div>
+
+            <!-- Shelter Details -->
+            <div class="shelter-details">
+                <h3>{{ pet.shelter.shelter_name }}</h3>
+                
+                <div class="shelter-contact-info">
+                    <!-- Address -->
+                    <div class="shelter-info-row">
+                        <span class="shelter-icon">📍</span>
+                        <div class="shelter-detail">
+                            <p>{{ pet.shelter.address }}, {{ pet.shelter.city }}, {{ pet.shelter.province }} {{ pet.shelter.postal_code }}</p>
+                        </div>
+                    </div>
+
+                    <!-- Phone -->
+                    <div class="shelter-info-row">
+                        <span class="shelter-icon">📞</span>
+                        <div class="shelter-detail">
+                            <a href="tel:{{ pet.shelter.phone_number }}">{{ pet.shelter.phone_number }}</a>
+                        </div>
+                    </div>
+
+                    <!-- Email -->
+                    <div class="shelter-info-row">
+                        <span class="shelter-icon">📧</span>
+                        <div class="shelter-detail">
+                            <a href="mailto:{{ pet.shelter.email }}">{{ pet.shelter.email }}</a>
+                        </div>
+                    </div>
+
+                    <!-- Social Media -->
+                    {% if pet.shelter.social_media_page %}
+                    <div class="shelter-info-row">
+                        <span class="shelter-icon">🔗</span>
+                        <div class="shelter-detail">
+                            <a href="{{ pet.shelter.social_media_page }}" target="_blank">Visit our social media</a>
+                        </div>
+                    </div>
+                    {% endif %}
+                </div>
+
+                <!-- Shelter Description -->
+                {% if pet.shelter.description %}
+                <div class="shelter-description">
+                    <p>{{ pet.shelter.description }}</p>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

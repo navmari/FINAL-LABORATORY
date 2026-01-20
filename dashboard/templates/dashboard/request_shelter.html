@@ -1,0 +1,19 @@
+{% extends 'dashboard/base.html' %}
+
+{% block content %}
+<h2>Request Shelter Assignment</h2>
+
+<p>Your account is marked as shelter staff but is not linked to a shelter yet.</p>
+<p>Please contact your site administrator and request assignment to one of the shelters below. Provide your username and the shelter name (or ID) you wish to be assigned to.</p>
+
+<h3>Available shelters</h3>
+<ul>
+    {% for s in shelters %}
+    <li>{{ s.id }} — {{ s.shelter_name }} ({{ s.city }})</li>
+    {% empty %}
+    <li>No shelters are registered yet. An administrator must create shelters first.</li>
+    {% endfor %}
+</ul>
+
+<p><a href="{% url 'dashboard' %}">Back to dashboard</a></p>
+{% endblock %}

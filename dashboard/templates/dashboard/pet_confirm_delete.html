@@ -1,0 +1,9 @@
+{% extends 'dashboard/base.html' %}
+{% block content %}
+<h2>Delete {{ object.pet_name }}?</h2>
+
+<form method="post">
+    {% csrf_token %}
+    <button type="submit">Yes, Delete</button>
+</form>
+{% endblock %}

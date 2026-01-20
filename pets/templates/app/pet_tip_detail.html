@@ -1,0 +1,36 @@
+{% extends 'app/base.html' %}
+
+{% block title %}{{ tip.title }} | Pet Care Tips - PetConnect{% endblock %}
+
+{% block content %}
+<div class="tip-detail-container">
+    <!-- Back Button -->
+    <div class="tip-detail-header">
+        <a href="{% url 'pet-tips' %}" class="back-link">← Back to Blog</a>
+        <h1>{{ tip.title }}</h1>
+        <p class="tip-posted-date">Posted on {{ tip.created_at|date:"F d, Y" }}</p>
+    </div>
+
+    <!-- Main Content -->
+    <div class="tip-detail-content">
+        <!-- Featured Image -->
+        {% if tip.image %}
+        <div class="tip-detail-image">
+            <img src="{{ tip.image.url }}" alt="{{ tip.title }}" class="featured-image">
+        </div>
+        {% endif %}
+
+        <!-- Full Content -->
+        <div class="tip-detail-text">
+            {{ tip.content|safe }}
+        </div>
+
+        <!-- Related Links Section -->
+        <div class="tip-detail-footer">
+            <a href="{% url 'pet-tips' %}" class="btn-back-to-blog">Back to All Tips</a>
+            <a href="{% url 'home' %}" class="btn-browse-pets">Browse Pets</a>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

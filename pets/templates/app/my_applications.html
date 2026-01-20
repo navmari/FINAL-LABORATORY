@@ -1,0 +1,306 @@
+{% extends 'app/base.html' %}
+
+{% block title %}My Adoption Applications{% endblock %}
+
+{% block content %}
+<div class="my-applications-container">
+    <div class="applications-header">
+        <h1>My Adoption Applications</h1>
+        <p>Track the status of your adoption applications here</p>
+    </div>
+
+    {% if applications %}
+        <div class="applications-grid">
+            {% for application in applications %}
+                <div class="application-card">
+                    <!-- Pet Image -->
+                    {% if application.pet.pet_image %}
+                        <div class="card-image">
+                            <img src="{{ application.pet.pet_image.url }}" alt="{{ application.pet.pet_name }}">
+                        </div>
+                    {% else %}
+                        <div class="card-image placeholder">
+                            <span>No Image</span>
+                        </div>
+                    {% endif %}
+
+                    <!-- Card Content -->
+                    <div class="card-content">
+                        <!-- Pet Name & Status -->
+                        <div class="card-header">
+                            <h3>{{ application.pet.pet_name }}</h3>
+                            <span class="status-badge {{ application.status_info.badge_class }}">
+                                {{ application.status_info.label }}
+                            </span>
+                        </div>
+
+                        <!-- Application Details -->
+                        <div class="application-details">
+                            <p><strong>Breed:</strong> {{ application.pet.breed }}</p>
+                            <p><strong>Shelter:</strong> {{ application.pet.shelter.shelter_name|default:"Unknown" }}</p>
+                            <p><strong>Applied:</strong> {{ application.created_at|date:"M d, Y" }}</p>
+                        </div>
+
+                        <!-- Status Message -->
+                        <div class="status-message">
+                            <p>{{ application.status_info.message }}</p>
+                        </div>
+
+                        <!-- Action Buttons -->
+                        <div class="card-actions">
+                            {% if application.status == 'APPROVED' %}
+                                <a href="tel:{{ application.pet.shelter.phone_number|default:'#' }}" class="btn btn-primary">
+                                    Call Shelter
+                                </a>
+                                <a href="mailto:{{ application.pet.shelter.email|default:'#' }}" class="btn btn-secondary">
+                                    Email Shelter
+                                </a>
+                            {% elif application.status == 'REJECTED' %}
+                                <a href="{% url 'home' %}" class="btn btn-primary">
+                                    {{ application.status_info.action }}
+                                </a>
+                            {% elif application.status == 'PENDING' %}
+                                <a href="{% url 'application-detail' application.pk %}" class="btn btn-secondary">
+                                    View Details
+                                </a>
+                            {% else %}
+                                <a href="{% url 'application-detail' application.pk %}" class="btn btn-secondary">
+                                    View Application
+                                </a>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <div class="empty-state">
+            <h2>No Applications Yet</h2>
+            <p>You haven't submitted any adoption applications.</p>
+            <a href="{% url 'home' %}" class="btn btn-primary">Browse Available Pets</a>
+        </div>
+    {% endif %}
+</div>
+
+<style>
+    .my-applications-container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 40px 20px;
+    }
+
+    .applications-header {
+        text-align: center;
+        margin-bottom: 40px;
+    }
+
+    .applications-header h1 {
+        font-size: 2.5rem;
+        color: #333;
+        margin-bottom: 10px;
+    }
+
+    .applications-header p {
+        font-size: 1.1rem;
+        color: #666;
+    }
+
+    .applications-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+        gap: 30px;
+    }
+
+    .application-card {
+        background: white;
+        border-radius: 12px;
+        overflow: hidden;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .application-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 15px rgba(0, 0, 0, 0.15);
+    }
+
+    .card-image {
+        width: 100%;
+        height: 200px;
+        overflow: hidden;
+        background: #f0f0f0;
+    }
+
+    .card-image img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+
+    .card-image.placeholder {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1rem;
+        color: #999;
+    }
+
+    .card-content {
+        padding: 20px;
+    }
+
+    .card-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 15px;
+    }
+
+    .card-header h3 {
+        font-size: 1.5rem;
+        color: #333;
+        margin: 0;
+    }
+
+    .status-badge {
+        font-size: 0.85rem;
+        padding: 6px 12px;
+        border-radius: 20px;
+        font-weight: 600;
+        white-space: nowrap;
+    }
+
+    .badge-pending {
+        background: #fff3cd;
+        color: #856404;
+    }
+
+    .badge-approved {
+        background: #d4edda;
+        color: #155724;
+    }
+
+    .badge-rejected {
+        background: #f8d7da;
+        color: #721c24;
+    }
+
+    .badge-completed {
+        background: #d1ecf1;
+        color: #0c5460;
+    }
+
+    .badge-default {
+        background: #e2e3e5;
+        color: #383d41;
+    }
+
+    .application-details {
+        font-size: 0.9rem;
+        color: #666;
+        margin-bottom: 15px;
+        border-bottom: 1px solid #eee;
+        padding-bottom: 15px;
+    }
+
+    .application-details p {
+        margin: 8px 0;
+    }
+
+    .status-message {
+        background: #f9f9f9;
+        padding: 12px;
+        border-left: 4px solid #CC5500;
+        border-radius: 4px;
+        margin-bottom: 15px;
+        font-size: 0.95rem;
+        color: #555;
+    }
+
+    .card-actions {
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+    }
+
+    .btn {
+        padding: 10px 16px;
+        border-radius: 6px;
+        text-decoration: none;
+        font-weight: 600;
+        font-size: 0.9rem;
+        border: none;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        text-align: center;
+        flex: 1;
+        min-width: 120px;
+    }
+
+    .btn-primary {
+        background: linear-gradient(135deg, #D4AF37 0%, #CC5500 100%);
+        color: white;
+    }
+
+    .btn-primary:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 8px rgba(204, 85, 0, 0.4);
+    }
+
+    .btn-secondary {
+        background: #f0f0f0;
+        color: #333;
+        border: 1px solid #ddd;
+    }
+
+    .btn-secondary:hover {
+        background: #e8e8e8;
+    }
+
+    .empty-state {
+        text-align: center;
+        padding: 60px 20px;
+        background: #f9f9f9;
+        border-radius: 12px;
+    }
+
+    .empty-state h2 {
+        font-size: 1.8rem;
+        color: #333;
+        margin-bottom: 10px;
+    }
+
+    .empty-state p {
+        font-size: 1.1rem;
+        color: #666;
+        margin-bottom: 30px;
+    }
+
+    @media (max-width: 768px) {
+        .applications-header h1 {
+            font-size: 1.8rem;
+        }
+
+        .applications-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .card-header {
+            flex-direction: column;
+            align-items: flex-start;
+        }
+
+        .status-badge {
+            margin-top: 10px;
+        }
+
+        .card-actions {
+            flex-direction: column;
+        }
+
+        .btn {
+            min-width: auto;
+        }
+    }
+</style>
+{% endblock %}

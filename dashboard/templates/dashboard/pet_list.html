@@ -1,0 +1,320 @@
+{% extends 'dashboard/base.html' %}
+
+{% block content %}
+<div class="pet-list-container">
+    <div class="pet-list-header">
+        <h2>Your Pets</h2>
+        <a href="{% url 'pet-add' %}" class="btn-add-pet">➕ Add New Pet</a>
+    </div>
+
+    {% if pets %}
+        <div class="pet-cards">
+            {% for pet in pets %}
+            <div class="pet-card">
+                <div class="pet-card-image">
+                    {% if pet.pet_image %}
+                        <img src="{{ pet.pet_image.url }}" alt="{{ pet.pet_name }}">
+                    {% else %}
+                        <div class="pet-image-placeholder">🐾</div>
+                    {% endif %}
+                </div>
+
+                <div class="pet-card-content">
+                    <div class="pet-card-header">
+                        <h3>{{ pet.pet_name }}</h3>
+                        <span class="status-badge {% if pet.status == 'AVAILABLE' %}status-available{% elif pet.status == 'PENDING' %}status-pending{% else %}status-adopted{% endif %}">
+                            {{ pet.get_status_display }}
+                        </span>
+                    </div>
+
+                    <div class="pet-card-info">
+                        <p><strong>Species:</strong> {{ pet.species }}</p>
+                        <p><strong>Breed:</strong> {{ pet.breed }}</p>
+                        <p><strong>Gender:</strong> {{ pet.get_gender_display }}</p>
+                        <p><strong>Age:</strong> {{ pet.age_years }} years {% if pet.age_months %}{{ pet.age_months }} months{% endif %}</p>
+                        <p><strong>Adoption Fee:</strong> ₱{{ pet.adoption_fee }}</p>
+                    </div>
+
+                    {% if pet.description %}
+                    <div class="pet-card-description">
+                        <p>{{ pet.description|truncatewords:20 }}</p>
+                    </div>
+                    {% endif %}
+                </div>
+
+                <div class="pet-card-actions">
+                    <a href="{% url 'dashboard-pet-detail' pet.id %}" class="btn-view">👁️ View</a>
+                    <a href="{% url 'pet-edit' pet.id %}" class="btn-edit">✏️ Edit</a>
+                    <a href="{% url 'pet-delete' pet.id %}" class="btn-delete">🗑️ Delete</a>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <div class="no-pets">
+            <p>No pets yet. <a href="{% url 'pet-add' %}">Add your first pet</a></p>
+        </div>
+    {% endif %}
+</div>
+
+<style>
+    .pet-list-container {
+        padding: 20px 0;
+    }
+
+    .pet-list-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 30px;
+    }
+
+    .pet-list-header h2 {
+        margin: 0;
+        color: #2c3e50;
+        font-size: 1.8rem;
+    }
+
+    .btn-add-pet {
+        padding: 12px 20px;
+        background: linear-gradient(135deg, #ec4899 0%, #d83d7a 100%);
+        color: white;
+        text-decoration: none;
+        border-radius: 6px;
+        font-weight: 600;
+        transition: all 0.3s ease;
+        box-shadow: 0 2px 8px rgba(236, 72, 153, 0.3);
+    }
+
+    .btn-add-pet:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(236, 72, 153, 0.4);
+    }
+
+    .pet-cards {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
+        gap: 20px;
+    }
+
+    .pet-card {
+        background: white;
+        border: 1px solid #e0e0e0;
+        border-radius: 8px;
+        overflow: hidden;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+        transition: all 0.3s ease;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .pet-card:hover {
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+        border-color: #ec4899;
+        transform: translateY(-2px);
+    }
+
+    .pet-card-image {
+        width: 100%;
+        height: 200px;
+        background: #f0f0f0;
+        overflow: hidden;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .pet-card-image img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+
+    .pet-image-placeholder {
+        font-size: 4rem;
+        color: #ddd;
+    }
+
+    .pet-card-content {
+        padding: 20px;
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .pet-card-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        margin-bottom: 15px;
+        gap: 10px;
+    }
+
+    .pet-card-header h3 {
+        margin: 0;
+        color: #2c3e50;
+        font-size: 1.4rem;
+        flex: 1;
+    }
+
+    .status-badge {
+        padding: 6px 12px;
+        border-radius: 20px;
+        font-size: 0.75rem;
+        font-weight: 600;
+        white-space: nowrap;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    .status-available {
+        background: #d4edda;
+        color: #155724;
+        border: 1px solid #28a745;
+    }
+
+    .status-pending {
+        background: #fff3cd;
+        color: #856404;
+        border: 1px solid #ffc107;
+    }
+
+    .status-adopted {
+        background: #f8d7da;
+        color: #721c24;
+        border: 1px solid #f5c6cb;
+    }
+
+    .pet-card-info {
+        margin-bottom: 15px;
+        flex: 1;
+    }
+
+    .pet-card-info p {
+        margin: 6px 0;
+        color: #555;
+        font-size: 0.9rem;
+        line-height: 1.4;
+    }
+
+    .pet-card-description {
+        padding: 12px;
+        background: #f9f9f9;
+        border-left: 3px solid #ec4899;
+        margin: 15px 0;
+        border-radius: 4px;
+    }
+
+    .pet-card-description p {
+        margin: 0;
+        color: #666;
+        font-size: 0.85rem;
+        line-height: 1.5;
+    }
+
+    .pet-card-actions {
+        display: flex;
+        gap: 8px;
+        padding: 15px 20px;
+        border-top: 1px solid #f5f5f5;
+        background: #fafafa;
+    }
+
+    .btn-view,
+    .btn-edit,
+    .btn-delete {
+        flex: 1;
+        padding: 10px 12px;
+        border: none;
+        border-radius: 4px;
+        font-size: 0.85rem;
+        font-weight: 500;
+        cursor: pointer;
+        text-decoration: none;
+        display: inline-block;
+        text-align: center;
+        transition: all 0.3s ease;
+    }
+
+    .btn-view {
+        background: #3498db;
+        color: white;
+    }
+
+    .btn-view:hover {
+        background: #2980b9;
+    }
+
+    .btn-edit {
+        background: #f39c12;
+        color: white;
+    }
+
+    .btn-edit:hover {
+        background: #e67e22;
+    }
+
+    .btn-delete {
+        background: #e74c3c;
+        color: white;
+    }
+
+    .btn-delete:hover {
+        background: #c0392b;
+    }
+
+    .no-pets {
+        text-align: center;
+        padding: 60px 20px;
+        background: white;
+        border-radius: 8px;
+        color: #999;
+    }
+
+    .no-pets p {
+        font-size: 1.1rem;
+        margin: 0;
+    }
+
+    .no-pets a {
+        color: #ec4899;
+        font-weight: 600;
+        text-decoration: none;
+    }
+
+    .no-pets a:hover {
+        text-decoration: underline;
+    }
+
+    @media (max-width: 768px) {
+        .pet-cards {
+            grid-template-columns: 1fr;
+        }
+
+        .pet-list-header {
+            flex-direction: column;
+            gap: 15px;
+            align-items: flex-start;
+        }
+
+        .pet-list-header h2 {
+            margin-bottom: 0;
+        }
+
+        .btn-add-pet {
+            width: 100%;
+            text-align: center;
+        }
+
+        .pet-card-actions {
+            flex-direction: column;
+        }
+
+        .btn-view,
+        .btn-edit,
+        .btn-delete {
+            width: 100%;
+        }
+    }
+</style>
+{% endblock %}

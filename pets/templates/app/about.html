@@ -1,0 +1,410 @@
+{% extends 'app/base.html' %}
+{% load static %}
+
+{% block title %}About PetConnect{% endblock %}
+
+{% block content %}
+<div class="about-container">
+    <!-- Header Section -->
+    <section class="about-header">
+        <div class="about-header-content">
+            <img src="{% static 'images/shelter_logos/pCLOGO.png' %}" alt="PetConnect Logo" class="about-logo">
+            <h1>About PetConnect</h1>
+            <p class="about-subtitle">Promoting Responsible Pet Adoption & Animal Welfare</p>
+        </div>
+    </section>
+
+    <!-- About Information Section -->
+    <section class="about-info">
+        <div class="content-wrapper">
+            <div class="about-content">
+                <h2>What is PetConnect?</h2>
+                <p>
+                    PetConnect is an online pet care and adoption system designed to promote responsible pet ownership, 
+                    ethical adoption practices, and animal welfare awareness. The platform serves as a digital bridge 
+                    connecting individuals, animal shelters, and potential adopters in a centralized and accessible environment.
+                </p>
+
+                <h3>Our Key Features</h3>
+                <ul class="features-list">
+                    <li>
+                        <strong>Free Pet Listing:</strong> Authorized individuals and registered animal shelters can list 
+                        pets for adoption free of charge. Users with proper access can add, update, and manage pet records 
+                        directly within the system, ensuring accurate and up-to-date information for prospective adopters.
+                    </li>
+                    <li>
+                        <strong>Pet Management:</strong> This feature empowers shelters and individuals to actively participate 
+                        in the adoption process while maintaining control over their listed pets.
+                    </li>
+                    <li>
+                        <strong>Educational Resources:</strong> PetConnect provides reliable information related to proper pet care, 
+                        health awareness, and responsible ownership. By integrating adoption services with educational resources, 
+                        the system supports informed decision-making among users and encourages long-term commitment to animal care.
+                    </li>
+                    <li>
+                        <strong>Community Engagement:</strong> Developed as an academic project under Cavite State University – 
+                        Bacoor City Campus, PetConnect demonstrates the practical application of web technologies in addressing 
+                        real-world social concerns.
+                    </li>
+                </ul>
+
+                <h3>Our Mission</h3>
+                <p>
+                    The system highlights the importance of technology-driven solutions in supporting animal welfare, community 
+                    engagement, and sustainable adoption initiatives. We believe that every pet deserves a loving home, and every 
+                    potential adopter deserves the tools and information to make the right choice.
+                </p>
+
+                <h3>Academic Background</h3>
+                <p>
+                    <strong>Institution:</strong> Cavite State University – Bacoor City Campus<br>
+                    <strong>Project Type:</strong> Academic Web Application<br>
+                    <strong>Purpose:</strong> Practical application of web technologies in addressing animal welfare and community concerns
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Shelters Section -->
+    <section class="shelters-section">
+        <div class="content-wrapper">
+            <h2>Our Partner Shelters</h2>
+            <p class="shelters-intro">
+                PetConnect works with dedicated animal shelters and organizations committed to animal welfare. 
+                Here are some of our partner shelters:
+            </p>
+
+            {% if shelters %}
+                <div class="shelters-grid">
+                    {% for shelter in shelters %}
+                    <div class="shelter-card">
+                        <div class="shelter-logo-container">
+                            {% if shelter.logo %}
+                                <img src="{{ shelter.logo.url }}" alt="{{ shelter.shelter_name }}" class="shelter-logo">
+                            {% else %}
+                                <div class="shelter-logo-placeholder">🏢</div>
+                            {% endif %}
+                        </div>
+
+                        <div class="shelter-card-content">
+                            <h3>{{ shelter.shelter_name }}</h3>
+                            
+                            <div class="shelter-info">
+                                <p><strong>Location:</strong><br>
+                                    {{ shelter.address }}<br>
+                                    {{ shelter.city }}, {{ shelter.province }} {{ shelter.postal_code }}
+                                </p>
+
+                                <p><strong>Contact Information:</strong><br>
+                                    📞 <a href="tel:{{ shelter.phone_number }}">{{ shelter.phone_number }}</a><br>
+                                    📧 <a href="mailto:{{ shelter.email }}">{{ shelter.email }}</a>
+                                </p>
+
+                                {% if shelter.social_media_page %}
+                                <p>
+                                    <strong>Connect:</strong><br>
+                                    <a href="{{ shelter.social_media_page }}" target="_blank" class="social-link">Visit Social Media</a>
+                                </p>
+                                {% endif %}
+
+                                {% if shelter.description %}
+                                <p><strong>About:</strong><br>
+                                    {{ shelter.description }}
+                                </p>
+                                {% endif %}
+                            </div>
+
+                            <div class="shelter-actions">
+                                <a href="{% url 'home' %}?search=" class="btn-view-pets">View Pets from this Shelter</a>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <p class="no-shelters">No shelters registered yet. Check back soon!</p>
+            {% endif %}
+        </div>
+    </section>
+
+    <!-- Contact Section -->
+    <section class="about-contact">
+        <div class="content-wrapper">
+            <h2>Get Involved</h2>
+            <p>
+                Are you an animal shelter interested in partnering with PetConnect? Or an individual who wants to 
+                contribute to animal welfare? We'd love to hear from you!
+            </p>
+            <p class="contact-info">
+                📧 Contact the System Administrator for more information about becoming a partner shelter or contributor.
+            </p>
+        </div>
+    </section>
+</div>
+
+<style>
+    .about-container {
+        min-height: calc(100vh - 200px);
+    }
+
+    .about-header {
+        background: linear-gradient(135deg, #9CA3AF 0%, #EC4899 100%);
+        color: white;
+        padding: 60px 20px;
+        text-align: center;
+    }
+
+    .about-header-content {
+        max-width: 800px;
+        margin: 0 auto;
+    }
+
+    .about-logo {
+        height: 100px;
+        margin-bottom: 20px;
+        filter: brightness(0) invert(1);
+    }
+
+    .about-header h1 {
+        font-size: 3rem;
+        margin: 20px 0 10px;
+    }
+
+    .about-subtitle {
+        font-size: 1.3rem;
+        opacity: 0.95;
+    }
+
+    .about-info {
+        padding: 60px 20px;
+        background: #f8f9fa;
+    }
+
+    .about-content {
+        max-width: 900px;
+        margin: 0 auto;
+    }
+
+    .about-content h2 {
+        color: #2c3e50;
+        font-size: 2rem;
+        margin-bottom: 20px;
+        border-bottom: 3px solid #ec4899;
+        padding-bottom: 10px;
+    }
+
+    .about-content h3 {
+        color: #34495e;
+        font-size: 1.5rem;
+        margin-top: 30px;
+        margin-bottom: 15px;
+    }
+
+    .about-content p {
+        line-height: 1.8;
+        color: #555;
+        margin-bottom: 15px;
+        font-size: 1.05rem;
+    }
+
+    .features-list {
+        list-style: none;
+        padding: 0;
+        margin: 20px 0;
+    }
+
+    .features-list li {
+        background: white;
+        padding: 20px;
+        margin-bottom: 15px;
+        border-left: 4px solid #ec4899;
+        border-radius: 4px;
+        line-height: 1.7;
+    }
+
+    .shelters-section {
+        padding: 60px 20px;
+        background: white;
+    }
+
+    .shelters-intro {
+        text-align: center;
+        color: #666;
+        font-size: 1.1rem;
+        margin-bottom: 40px;
+    }
+
+    .shelters-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+        gap: 30px;
+        margin-bottom: 40px;
+    }
+
+    .shelter-card {
+        background: white;
+        border: 1px solid #e0e0e0;
+        border-radius: 8px;
+        overflow: hidden;
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .shelter-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    }
+
+    .shelter-logo-container {
+        background: #f8f9fa;
+        padding: 20px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        min-height: 150px;
+    }
+
+    .shelter-logo {
+        max-width: 100%;
+        max-height: 150px;
+        object-fit: contain;
+    }
+
+    .shelter-logo-placeholder {
+        font-size: 3rem;
+        color: #999;
+    }
+
+    .shelter-card-content {
+        padding: 25px;
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .shelter-card h3 {
+        margin: 0 0 15px 0;
+        color: #2c3e50;
+        font-size: 1.5rem;
+    }
+
+    .shelter-info {
+        flex: 1;
+        color: #666;
+        font-size: 0.95rem;
+        line-height: 1.6;
+    }
+
+    .shelter-info p {
+        margin-bottom: 15px;
+    }
+
+    .shelter-info a {
+        color: #ec4899;
+        text-decoration: none;
+        font-weight: 500;
+    }
+
+    .shelter-info a:hover {
+        text-decoration: underline;
+    }
+
+    .social-link {
+        display: inline-block;
+        padding: 5px 10px;
+        background: #ec4899;
+        color: white !important;
+        border-radius: 4px;
+        margin-top: 5px;
+    }
+
+    .shelter-actions {
+        margin-top: 15px;
+        padding-top: 15px;
+        border-top: 1px solid #e0e0e0;
+    }
+
+    .btn-view-pets {
+        display: inline-block;
+        background: #ec4899;
+        color: white;
+        padding: 10px 15px;
+        border-radius: 4px;
+        text-decoration: none;
+        transition: background 0.3s ease;
+        font-weight: 500;
+    }
+
+    .btn-view-pets:hover {
+        background: #d83d7a;
+    }
+
+    .no-shelters {
+        text-align: center;
+        color: #999;
+        font-style: italic;
+        padding: 40px;
+    }
+
+    .about-contact {
+        background: linear-gradient(135deg, #f8f9fa 0%, #e8e9ea 100%);
+        padding: 60px 20px;
+        text-align: center;
+    }
+
+    .about-contact h2 {
+        color: #2c3e50;
+        font-size: 2rem;
+        margin-bottom: 20px;
+    }
+
+    .about-contact p {
+        color: #666;
+        font-size: 1.1rem;
+        margin-bottom: 15px;
+    }
+
+    .contact-info {
+        font-weight: 500;
+        color: #ec4899;
+    }
+
+    @media (max-width: 768px) {
+        .about-header h1 {
+            font-size: 2rem;
+        }
+
+        .about-header {
+            padding: 40px 20px;
+        }
+
+        .about-info,
+        .shelters-section,
+        .about-contact {
+            padding: 40px 20px;
+        }
+
+        .shelters-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .shelter-card {
+            margin-bottom: 20px;
+        }
+
+        .about-content h2,
+        .about-contact h2 {
+            font-size: 1.5rem;
+        }
+
+        .about-content h3 {
+            font-size: 1.2rem;
+        }
+
+        .about-logo {
+            height: 80px;
+        }
+    }
+</style>
+{% endblock %}

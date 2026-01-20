@@ -1,0 +1,52 @@
+{% extends 'dashboard/base.html' %}
+
+{% load static %}
+
+{% block content %}
+<div class="admin-action-form">
+    <h2>{{ view.object|yesno:"Edit Pet,Add Pet" }}</h2>
+
+    {% if view.object and view.object.pet_image %}
+        <div style="margin-bottom:10px">
+            <img src="{{ view.object.pet_image.url }}" alt="current image" id="current-image">
+        </div>
+    {% endif %}
+
+    <form method="post" enctype="multipart/form-data" id="pet-form">
+        {% csrf_token %}
+
+        {{ form.as_p }}
+
+        <div style="margin-top:14px;display:flex;gap:10px;align-items:center">
+            <button type="submit" class="btn">Save</button>
+            <a href="{% url 'dashboard-pets' %}" class="btn secondary">Cancel</a>
+        </div>
+    </form>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function(){
+    const fileInput = document.getElementById('id_pet_image');
+    if(!fileInput) return;
+    fileInput.addEventListener('change', function(ev){
+        const f = ev.target.files && ev.target.files[0];
+        if(!f) return;
+        const reader = new FileReader();
+        reader.onload = function(e){
+            let img = document.getElementById('current-image');
+            if(!img){
+                img = document.createElement('img');
+                img.id = 'current-image';
+                img.style.maxHeight = '180px';
+                img.style.objectFit = 'cover';
+                img.style.borderRadius = '8px';
+                fileInput.parentNode.insertBefore(img, fileInput);
+            }
+            img.src = e.target.result;
+        };
+        reader.readAsDataURL(f);
+    });
+});
+</script>
+
+{% endblock %}

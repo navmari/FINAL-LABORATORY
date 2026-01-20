@@ -1,0 +1,15 @@
+{% extends "app/base.html" %}
+
+{% block title %}Create Shelter Account{% endblock %}
+
+{% block content %}
+<h2>Create Shelter Account (Admin)</h2>
+
+<form method="post">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit">Create Shelter Account</button>
+</form>
+
+<p><a href="/admin/">Back to admin</a></p>
+{% endblock %}

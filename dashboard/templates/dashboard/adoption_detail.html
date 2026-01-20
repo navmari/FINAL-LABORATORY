@@ -1,0 +1,34 @@
+{% extends "dashboard/base.html" %}
+{% block content %}
+
+<div class="center-page">
+  <div class="center-inner adoption-detail">
+
+    <h2>Application {{ application.request_id }} — {{ application.pet.pet_name }}</h2>
+
+    {% if application.pet.pet_image %}
+        <img src="{{ application.pet.pet_image.url }}" alt="{{ application.pet.pet_name }}" class="adoption-pet-thumb">
+    {% endif %}
+
+    <div class="admin-action-form">
+        <p><strong>Adopter:</strong> {{ application.first_name }} {{ application.middle_name }} {{ application.last_name }} ({{ application.email }})</p>
+        <p><strong>Phone:</strong> {{ application.phone_number }}</p>
+        <p><strong>Address:</strong> {{ application.address }}, {{ application.city }}, {{ application.province }}</p>
+        <p><strong>Submitted:</strong> {{ application.created_at|date:"M d, Y H:i" }}</p>
+        <p><strong>Status:</strong> {{ application.status }}</p>
+
+        <h4>Reason for adoption</h4>
+        <p>{{ application.reason_for_adoption }}</p>
+
+        <form method="post" style="margin-top:12px">
+            {% csrf_token %}
+            <button type="submit" name="action" value="approve" class="btn" data-confirm="Approve application {{ application.request_id }} for {{ application.pet.pet_name }}?">Approve</button>
+            <button type="submit" name="action" value="reject" class="btn secondary" data-confirm="Reject application {{ application.request_id }} for {{ application.pet.pet_name }}?">Reject</button>
+            <a href="{% url 'dashboard-adoptions' %}" class="btn secondary">Back to list</a>
+        </form>
+    </div>
+
+  </div>
+</div>
+
+{% endblock %}

@@ -1,0 +1,122 @@
+{% extends 'dashboard/base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="center-page">
+    <div class="center-inner">
+        <div class="dashboard-header">
+    <div class="header-left">
+        {% if user.is_authenticated and user.profile.shelter and user.profile.shelter.logo %}
+            <img src="{{ user.profile.shelter.logo.url }}" alt="{{ user.profile.shelter.shelter_name }} logo" class="shelter-logo">
+        {% endif %}
+        <div>           
+            <h1>Dashboard</h1>
+            <p>Add, Edit, Delete And Manage Your Pets.</p>
+            
+            {% if user.is_authenticated and user.profile.shelter %}
+            <p class="welcome">Welcome back {{ user.profile.shelter.shelter_name }}'s Rescue 🐾</p>
+            {% else %}
+            <p class="welcome">Welcome back {{ user.username }}'s Rescue 🐾</p>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+{% if user.profile.role == 'SHELTER' and not user.profile.shelter %}
+<div class="setup-banner">
+    <strong>Action required:</strong> Your account isn't linked to a shelter yet. You won't be able to add pets until an administrator assigns you to a shelter.
+    <p><a href="{% url 'dashboard-request-shelter' %}">Request assignment</a> or contact your site administrator.</p>
+</div>
+{% endif %}
+
+
+<div class="cards-container">
+    <div class="card">
+        <h3>Total Pets</h3>
+        <p>{{ pets_count }}</p>
+    </div>
+    <div class="card">
+        <h3>Pending Applications</h3>
+        <p>{{ pending_apps_count }}</p>
+    </div>
+</div>
+
+<!-- Applications Profile will appear below the pet list -->
+
+<div class="pets-table-header">
+    <h2>Your Pets</h2>
+    <a href="{% url 'pet-add' %}" class="btn-add">Add New</a>
+</div>
+
+<table class="pets-table">
+    <thead>
+        <tr>
+            <th>Thumbnail</th>
+            <th>Name</th>
+            <th>Status</th>
+            <th>Applications</th>
+            <th>Species</th>
+            <th>Date Added</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for pet in pets %}
+        <tr>
+            <td>{% if pet.pet_image %}<img src="{{ pet.pet_image.url }}" alt="{{ pet.pet_name }}" class="thumb">{% endif %}</td>
+            <td>{{ pet.pet_name }}</td>
+            <td>
+                <span class="status {{ pet.status|lower }}">
+                    {{ pet.status }}
+                </span>
+            </td>
+            <td>{{ pet.applications.count }}</td>
+            <td>{{ pet.species }}</td>
+            <td>{{ pet.date_added|date:"M d, Y" }}</td>
+            <td>
+                <a href="{% url 'dashboard-pet-detail' pet.id %}" class="btn">View Details</a>
+                <a href="{% url 'pet-edit' pet.id %}" class="btn-edit">Edit</a>
+                <a href="{% url 'pet-delete' pet.id %}" class="btn-delete">Delete</a>
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% if pending_applications and pending_applications|length > 0 %}
+<div class="pending-apps-panel">
+    <h3>Applications Profile</h3>
+    <table class="pending-apps-table">
+        <thead>
+            <tr>
+                <th>Pet</th>
+                <th>Adopter</th>
+                <th>Reason</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for app in pending_applications %}
+            <tr>
+                <td>{{ app.pet.pet_name }}</td>
+                <td>{{ app.first_name }} {{ app.last_name }}</td>
+                <td class="reason">{{ app.reason_for_adoption|truncatechars:60 }}</td>
+                <td class="actions">
+                    <form method="post" action="{% url 'dashboard-adoption-update' app.id 'APPROVED' %}" class="inline-form" data-confirm="Approve application {{ app.request_id }} for {{ app.pet.pet_name }}?">
+                        {% csrf_token %}
+                        <button type="submit" title="Approve" class="btn">✅</button>
+                    </form>
+                    <form method="post" action="{% url 'dashboard-adoption-update' app.id 'REJECTED' %}" class="inline-form" data-confirm="Reject application {{ app.request_id }} for {{ app.pet.pet_name }}?">
+                        {% csrf_token %}
+                        <button type="submit" title="Reject" class="btn secondary">❌</button>
+                    </form>
+                    <a class="action-view" href="{% url 'dashboard-adoption-detail' app.id %}">View</a>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endif %}
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,69 @@
+{% extends "dashboard/base.html" %}
+{% block content %}
+
+<div class="center-page">
+  <div class="center-inner">
+
+    <div class="admin-action-form">
+        <h2>{{ pet.pet_name }} <small class="text-muted">({{ pet.species }})</small></h2>
+
+        {% if pet.pet_image %}
+            <img src="{{ pet.pet_image.url }}" alt="{{ pet.pet_name }}" class="adoption-pet-thumb">
+        {% endif %}
+
+        <p><strong>Status:</strong> {{ pet.status }}</p>
+        <p><strong>Age:</strong> {{ pet.age_years }} years {{ pet.age_months }} months</p>
+        <p><strong>Breed:</strong> {{ pet.breed }}</p>
+        <p><strong>Health:</strong> {{ pet.health_status }}</p>
+        <p><strong>Adoption Fee:</strong> ₱{{ pet.adoption_fee }}</p>
+        <h4>Description</h4>
+        <p>{{ pet.description }}</p>
+
+        <p>
+            <a href="{% url 'pet-edit' pet.id %}" class="btn">Edit</a>
+            <a href="{% url 'pet-delete' pet.id %}" class="btn secondary">Delete</a>
+            <a href="{% url 'dashboard' %}" class="btn secondary">Back</a>
+        </p>
+        
+        <h3>Applications</h3>
+        {% if applications and applications|length > 0 %}
+          <form method="post" action="{% url 'dashboard-pet-approve-all' pet.id %}" data-confirm="Approve all pending applications for {{ pet.pet_name }}?">
+            {% csrf_token %}
+            <button type="submit" class="btn">Approve All Pending</button>
+          </form>
+          <table class="pets-table" style="margin-top:12px">
+            <thead>
+              <tr><th>Applicant</th><th>Reason</th><th>Status</th><th>Action</th></tr>
+            </thead>
+            <tbody>
+              {% for app in applications %}
+              <tr>
+                <td>{{ app.first_name }} {{ app.last_name }}</td>
+                <td>{{ app.reason_for_adoption|truncatechars:80 }}</td>
+                <td>{{ app.status }}</td>
+                <td>
+                  <a href="{% url 'dashboard-adoption-detail' app.id %}" class="btn">View</a>
+                  {% if app.status == 'PENDING' %}
+                    <form method="post" action="{% url 'dashboard-adoption-update' app.id 'APPROVED' %}" class="inline-form" data-confirm="Approve application {{ app.request_id }}?">
+                      {% csrf_token %}
+                      <button type="submit" class="btn">✅</button>
+                    </form>
+                    <form method="post" action="{% url 'dashboard-adoption-update' app.id 'REJECTED' %}" class="inline-form" data-confirm="Reject application {{ app.request_id }}?">
+                      {% csrf_token %}
+                      <button type="submit" class="btn secondary">❌</button>
+                    </form>
+                  {% endif %}
+                </td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        {% else %}
+          <p>No applications for this pet.</p>
+        {% endif %}
+    </div>
+
+  </div>
+</div>
+
+{% endblock %}

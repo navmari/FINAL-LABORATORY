@@ -1,0 +1,54 @@
+{% extends 'app/base.html' %}
+
+{% block title %}Pet Care Tips - Blog | PetConnect{% endblock %}
+
+{% block content %}
+<div class="blog-container">
+    <div class="blog-header">
+        <h1>Pet Care Tips Blog</h1>
+        <p class="blog-intro">Learn essential pet care tips and best practices from our shelter experts</p>
+    </div>
+
+    <div class="blog-grid">
+        {% for tip in tips %}
+        <article class="blog-card">
+            <!-- Blog Image -->
+            <div class="blog-image-container">
+                {% if tip.image %}
+                    <img src="{{ tip.image.url }}" alt="{{ tip.title }}" class="blog-image">
+                {% else %}
+                    <div class="blog-image-placeholder">
+                        <span>📋</span>
+                    </div>
+                {% endif %}
+            </div>
+
+            <!-- Blog Content -->
+            <div class="blog-content">
+                <h2 class="blog-title">{{ tip.title }}</h2>
+                
+                <!-- Intro/Excerpt -->
+                <p class="blog-excerpt">
+                    {% if tip.content|length > 150 %}
+                        {{ tip.content|truncatewords:30|safe }}
+                    {% else %}
+                        {{ tip.content|safe }}
+                    {% endif %}
+                </p>
+
+                <!-- Posted Date -->
+                <p class="blog-date">{{ tip.created_at|date:"M d, Y" }}</p>
+
+                <!-- Read More Button -->
+                <a href="{% url 'pet-tip-detail' tip.id %}" class="read-more-btn">Read More →</a>
+            </div>
+        </article>
+        {% empty %}
+        <div class="no-tips-message">
+            <p>No tips yet. Check back soon for pet care advice!</p>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+{% endblock %}

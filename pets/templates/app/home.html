@@ -1,0 +1,96 @@
+{% extends 'app/base.html' %}
+{% load static %}
+
+{% block title %}Adopt a Pet | PetConnect{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<section class="hero-section">
+    <img src="{% static 'images/pet_images/pet_hero.png' %}" alt="Pet Banner" class="hero-image">
+    <div class="hero-overlay">
+        <a href="{% url 'signup' %}" class="adopt-now-btn left-button">Adopt Now</a>
+    </div>
+</section>
+
+<!-- Search Bar Section -->
+<section class="search-section">
+    <div class="content-wrapper">
+        <form method="get" class="search-form">
+            <input type="text" name="search" placeholder="Search by species or breed..." value="{{ request.GET.search }}" class="search-input">
+            <button type="submit" class="search-btn">Search</button>
+        </form>
+    </div>
+</section>
+
+<!-- Pet Tips Section -->
+{% if tips %}
+<section class="pet-tips-section">
+    <div class="content-wrapper">
+        <h2 class="section-title">Pet Care Tips</h2>
+        <div class="tips-rows">
+            {% for tip in tips|slice:":4" %}
+            <a href="{% url 'pet-tip-detail' tip.id %}" class="tip-link">
+                <article class="tip">
+                    <h3>{{ tip.title }}</h3>
+                    {% if tip.image %}
+                        <img src="{{ tip.image.url }}" alt="{{ tip.title }}">
+                    {% endif %}
+                    <p>{{ tip.content|truncatewords:30|safe }}</p>
+                </article>
+            </a>
+            {% endfor %}
+        </div>
+        <p><a href="{% url 'pet-tips' %}">See all tips</a></p>
+    </div>
+</section>
+{% endif %}
+
+<!-- Available Pets Section -->
+<div class="content-wrapper">
+    <h2 class="section-title">Available Pets for Adoption</h2>
+
+<div class="pet-grid">
+    {% for pet in pets %}
+    <div class="pet-card">
+        <!-- Status Badge -->
+        <div class="pet-status-badge {% if pet.status == 'AVAILABLE' %}status-available{% elif pet.status == 'PENDING' %}status-pending{% else %}status-adopted{% endif %}">
+            {{ pet.get_status_display }}
+        </div>
+
+        <!-- Pet Image -->
+        {% if pet.pet_image %}
+            <img src="{{ pet.pet_image.url }}" alt="{{ pet.pet_name }}" class="pet-thumb">
+        {% else %}
+            <img src="/static/images/no-image.png" alt="No image" class="pet-thumb">
+        {% endif %}
+
+        <!-- Pet Information -->
+        <div class="pet-info">
+            <h3>{{ pet.pet_name }}</h3>
+            
+            <div class="pet-details">
+                <p><strong>Species:</strong> {{ pet.species }}</p>
+                <p><strong>Breed:</strong> {{ pet.breed }}</p>
+                <p><strong>Gender:</strong> {{ pet.get_gender_display }}</p>
+                <p><strong>Shelter:</strong> {{ pet.shelter.shelter_name }}, {{ pet.shelter.city }}</p>
+            </div>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="actions" style="margin-top:8px">
+            <a href="{% url 'pet-detail' pet.id %}" class="btn view-details">View Details</a>
+            {% if user.is_authenticated %}
+                {% if user.profile.role == 'ADOPTER' %}
+                    <a href="{% url 'adopt-pet' pet.id %}" class="btn-adopt">Adopt</a>
+                {% else %}
+                    <span class="badge">Shelter Staff</span>
+                {% endif %}
+            {% else %}
+                <a href="{% url 'signup' %}?next={% url 'adopt-pet' pet.id %}" class="btn-adopt">Sign up to Adopt</a>
+            {% endif %}
+        </div>
+    </div>
+    {% endfor %}
+</div>
+</div>
+{% endblock %}
